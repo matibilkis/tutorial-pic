@@ -1,11 +1,67 @@
-executable=HPC/subash.sh
-seed=41
+# ============================================
+# HTCondor Submission File
+# Quantum Circuit Parameter Sweep
+# ============================================
+#
+# This file defines the job requirements and submission parameters
+# for running a parameter sweep on the PIC HTCondor cluster.
+#
+# Usage: condor_submit submit.sub
+#
+
+# ============================================
+# Executable and Arguments
+# ============================================
+
+# Path to the bash script that will be executed on worker nodes
+executable = HPC/subash.sh
+
+# Default seed for reproducibility (can be overridden per job)
+seed = 41
+
+# Command-line arguments passed to the executable
+# $(p1) and $(p2) are substituted from the queue statement
+args = $(p1) $(p2) $(seed)
+
+# ============================================
+# Output Files
+# ============================================
+
+# Standard output: job results and print statements
 output = ../jobs/outs/$(p1)_$(p2).out
+
+# Standard error: error messages and warnings
 error = ../jobs/errs/$(p1)_$(p2).err
+
+# HTCondor log: job lifecycle events (submission, start, completion)
 log = ../jobs/logs/$(p1)_$(p2).log
+
+# ============================================
+# Resource Requirements
+# ============================================
+
+# Number of CPU cores requested per job
 request_cpus = 1
+
+# Memory requirement per job
 request_memory = 2 GB
-+flavour="short"
-requirements= Has_avx == true
-args=$(p1) $(p2) $(seed)
+
+# Job flavor: determines maximum walltime
+# Options: "short" (< 6h), "medium" (6-24h), "long" (> 24h)
++flavour = "short"
+
+# Hardware requirements: worker node must support AVX instructions
+requirements = Has_avx == true
+
+# ============================================
+# Job Queue
+# ============================================
+#
+# Queue statement creates one job per line in params.txt
+# Each line should contain: p1 p2
+# The variables $(p1) and $(p2) are substituted for each job
+#
+# Update the path below to match your PIC directory structure
+# ============================================
+
 queue p1 p2 from /nfs/pic.es/user/m/mbilkis/tutorial-pic/HPC/params.txt
